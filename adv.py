@@ -5,6 +5,41 @@ from world import World
 import random
 from ast import literal_eval
 
+class Queue():
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+
+    def size(self):
+        return len(self.queue)
+
+
+class Stack():
+    def __init__(self):
+        self.stack = []
+
+    def push(self, value):
+        self.stack.append(value)
+
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+
+    def size(self):
+        return len(self.stack)
+
+        
+
 # Load world
 world = World()
 
@@ -48,16 +83,19 @@ def reverse_dir(dir):
 
 # put the first room in the dictionary with the list of exits
 rooms[player.current_room.id] = player.current_room.get_exits()
+# print(f"Starting room: {player.current_room.id}, Exits: {player.current_room.get_exits()}\n")
 # while the length of the visited rooms is less than the number of rooms in the graph - the first room
 while len(rooms) < len(room_graph) - 1:
     # if the current room has never been visited
     if player.current_room.id not in rooms:
+        # print(f"Current room: {player.current_room.id}, Exits: {player.current_room.get_exits()}")
         # set the list of exits to the room in visited dictionary
         rooms[player.current_room.id] = player.current_room.get_exits()
         # mark the room you came from as explored
         last_room = backtracking[-1]
         rooms[player.current_room.id].remove(last_room)
-    # if there's a dead end...
+        # print(f"List of moves that happened - {traversal_path}\n")
+# for dead ends
     while len(rooms[player.current_room.id]) < 1:
         # remove the last direction from backtracking
         backtrack = backtracking.pop()
@@ -65,7 +103,7 @@ while len(rooms) < len(room_graph) - 1:
         player.travel(backtrack)
         # add the move to the traversal path
         traversal_path.append(backtrack)
-    # for the unexplored rooms
+# for the unexplored rooms
     else:
         # pick the last exit
         last_exit = rooms[player.current_room.id].pop()
@@ -75,6 +113,8 @@ while len(rooms) < len(room_graph) - 1:
         backtracking.append(reverse_dir(last_exit))
         # travel to the next room
         player.travel(last_exit)
+# print(f"Final List of Moves - {traversal_path}")
+print("found exit!")
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
